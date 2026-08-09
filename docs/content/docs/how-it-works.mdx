@@ -24,11 +24,11 @@ A subtlety worth knowing: when people say "PGN parser" they usually mean stage 2
 
 Stage 3 comes in three flavors, and choosing the cheapest sufficient one is the single biggest speed lever:
 
-| Mode        | What happens                                    | Who needs it                                       |
-| ----------- | ----------------------------------------------- | -------------------------------------------------- |
-| `'skip'`    | No board at all — moves are just counted        | Count-only runs (no move trackers)                 |
-| `'board'`   | Moves are played, positions tracked             | Trackers that need the board, not per-move details |
-| `'actions'` | Each half-move is decoded into `Action` objects | Move trackers (`defineMoveTracker`)                |
+| Mode        | What happens                                    | Who needs it                                                 |
+| ----------- | ----------------------------------------------- | ------------------------------------------------------------ |
+| `'skip'`    | No board at all — moves are just counted        | Count-only runs (no move trackers) or standalone PGN parsing |
+| `'board'`   | Moves are played, positions tracked             | Trackers that need the board, not per-move details           |
+| `'actions'` | Each half-move is decoded into `Action` objects | Move trackers (`defineMoveTracker`)                          |
 
 You normally never touch this: `analyzePGN` infers the mode from your trackers (a move tracker implies `'actions'`; no move trackers means replay is skipped by default). The `replay` option exists for overrides — e.g. `replay: 'board'` to force decoding so [broken moves surface as errors](/docs/error-handling).
 
