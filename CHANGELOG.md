@@ -7,6 +7,92 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.0.0] - 2026-08-09
+
+Version 4 is a full rewrite of the library formerly published as `chessalyzer.js` — it's just `chessalyzer` now. The rewrite was a chance to clean up the public API, make the analysis pipeline faster on large files, and write documentation that actually matches how the library gets used.
+
+### Highlights
+
+- **`analyzePGN`** replaces the static `Chessalyzer` class, with all options living in one plain object.
+- **Subpath imports** — `chessalyzer/pgn`, `/trackers`, `/board`, `/replay` — so you only pull in what you actually use.
+- **Tracker factories** — `tileTracker()`, `pieceTracker()`, `gameTracker()` give you instances; read the results off `instance.state` once analysis is done.
+- **A parse-only mode** — `parsePGN` / `streamParsePGN` for when you just want the games (headers + SAN) without running any trackers.
+- **Smarter replay** — modes `'skip' | 'board' | 'actions'` are inferred from your trackers, so parse-only runs skip board replay entirely.
+- **Workers on by default**, tunable with `workers: n` or `{ count, chunk }`; multi-run analyses parse each chunk of the file only once.
+- **A real docs site** — https://yschroe.github.io/chessalyzer/
+- **Zero production dependencies** — `chalk` is gone; `printHeatmap` draws its own colors.
+
+### Added
+
+- **`parsePGN` / `streamParsePGN`** on `chessalyzer/pgn` — parse a PGN file into games without touching the board or running any trackers.
+- **`chessalyzer/board`** — `Square`, `BoardCoord`, `StartingPieceName` / `PieceName`, coordinate helpers, `isStartingPieceName()`.
+- **A friendlier error policy** — analysis still aborts on the first bad game by default, but `onError: 'skip-game'` now lets it keep going and hand back a capped summary (`errors`, `errorsTruncated`, `skippedGames`, plus `isReplayError` / `getAnalyzeError` for easy checks).
+- **`MoveCoords`** on `chessalyzer/replay` and `chessalyzer/trackers` — the `{ from, to }` pair shared by `MoveAction` and custom move trackers.
+- **JSDoc everywhere** — public APIs now come with real descriptions and `@example`s, not just types.
+- **Analysis types on the root entry** (`AnalyzeRun`, `AnalyzeRunResult`, `GameFilter`, `ReplayMode`, `WorkerOptions`) and **`TrackerInstance`** from `chessalyzer/trackers` for typing tracker arrays.
+
+### Changed
+
+- **Package rename (breaking):** `chessalyzer.js` → **`chessalyzer`**. Requires Node.js ≥ 22 (or Bun).
+- **Entry point (breaking):** `Chessalyzer.analyzePGN(...)` → `analyzePGN(...)` from `chessalyzer`; single-threaded mode is now `{ workers: false }` instead of a `null` third argument.
+- **Custom trackers, reworked (breaking):** no more extending `BaseTracker` — write a definition with `defineGameTracker` / `defineMoveTracker` (plain, cloneable state plus `init` / `track` / `merge`), then call it to get an instance. Built-ins follow the same pattern: `tileTracker()`, `pieceTracker()`, `gameTracker()` replace the old `TileTracker` / `PieceTracker` / `GameTracker` classes.
+- **Results, reworked (breaking):** tracker stats live on the instances you passed in (`instance.state`), not on the result object. `AnalyzeResult` only carries per-run counts and timing (`result.perf.durationMs`, `result.perf.movesPerSecond`).
+- **Heatmaps, reworked (breaking):** `generateHeatmap` / `generateComparisonHeatmap` take a `HeatmapFn` directly, with flat callback args (`{ data, square, startingPiece }`); scoped presets are factories (e.g. `TILE_OCC_BY_PIECE('e4')`); the data matrix is `HeatmapData.grid` (was `map`); `printHeatmap` moved to `chessalyzer/trackers`.
+- **Filters & comparisons, reworked (breaking):** pass `runs: [...]` instead of an array of configs; a JavaScript `filter` implies single-threaded analysis when `workers` is omitted, and combining a filter with an explicit worker pool is now a type and runtime error.
+- **`TileTrackerState` (breaking):** the `tiles` 8×8 grid is now **`squares: Record<Square, SquareStats>`** — read `state.squares['e4']` directly. Field renames: `wasOn` → `occupiedFor`, `capturedOn` → `captures`, `wasCapturedOn` → `losses`.
+- **`GameTrackerState` (breaking):** `cntGames` → **`gameCount`**; `ECO` → **`eco`**.
+- **Replay actions (breaking):** squares are algebraic (`'e4'`) instead of coordinate pairs, with `castle` / `enPassant` flags; `type: 'promote'` → **`'promotion'`**.
+- **Piece-name types (breaking):** `Piece` → `StartingPieceName`, `BoardPieceName` → `PieceName`.
+- **`workers.batchSize` → `workers: { count, chunk }`** (breaking); shorthand **`workers: n`** also works.
+
+### Removed
+
+- **`Chessalyzer` class** and class-based custom trackers (`BaseTracker`) — see the tracker rework above.
+- **`chalk`** as a dependency.
+- **`workers.batchSize`** and the `null` single-threaded flag — see `workers` above.
+
+### Migration
+
+```ts
+// v3
+import { Chessalyzer, TileTracker } from 'chessalyzer.js';
+const t = new TileTracker();
+await Chessalyzer.analyzePGN(path, { trackers: [t] });
+
+// v4
+import { analyzePGN } from 'chessalyzer';
+import { tileTracker, generateHeatmap, TileHeatmapPresets } from 'chessalyzer/trackers';
+
+const tiles = tileTracker();
+await analyzePGN(path, { trackers: [tiles] });
+const cell = tiles.state.squares['f7'];
+generateHeatmap(tiles.state, TileHeatmapPresets.TILE_OCC_ALL);
+```
+
+Custom trackers: default-export the factory; pass options at call time:
+
+```ts
+export default defineGameTracker({
+    id: 'MyTracker',
+    workerModule: import.meta.url,
+    init: (options?) => ({ ... }),
+    track,
+    merge,
+});
+const t = myTracker({ minElo: 2000 });
+```
+
+Full guides: https://yschroe.github.io/chessalyzer/
+
+### Under the hood
+
+A few internal changes worth knowing about if you're curious where the speed comes from:
+
+- The pipeline is now organized into clear `io` → `pgn` → `replay` → analyze stages with consistent naming throughout.
+- In multithreaded mode, the main thread chunks the file into transferable UTF-8 byte ranges; workers handle parsing, replay, and tracking themselves, and only report state back once the pool drains.
+- The hot path still passes moves around as plain SAN strings internally; `{ san }` objects only get built at public boundaries (parse APIs, filters, game trackers) to avoid unnecessary allocations.
+- Parse-only and trackerless runs skip board replay entirely (~10% faster on large files), and single-threaded filtered multi-run analyses now share one parsed copy of each game across runs (~14% faster).
+
 ## [4.0.0-beta.2] - 2026-08-09
 
 ### Added
