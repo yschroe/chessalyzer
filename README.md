@@ -15,12 +15,13 @@ A JavaScript library for batch-analyzing chess PGN files — parse games, replay
 - Filter games (e.g. only analyze games where WhiteElo > 1800)
 - Fully modular, track only the statistics you need
 - Generate heatmaps out of the generated data
-- Standalone fast PGN parser with sync and async streaming mode
+- Standalone PGN parser with async streaming mode
+- It's fast: parses ~32M moves/s in parse-only mode; ~12M moves/s with full board replay and `Actions` decoding (measured on an Apple M1 MacBook Air 8GB; 1.8GiB test file)
 - Handles big files easily
 
 ## Documentation
 
-Guides for installation, basic usage, the analysis pipeline, built-in and custom trackers, heatmaps, filtering, multithreading, error handling, and more can be found in the **[Documentation](https://yschroe.github.io/chessalyzer/)**.
+Full guides for installation, basic usage, the analysis pipeline, built-in and custom trackers, heatmaps, filtering, multithreading, error handling, and more can be found in the **[Documentation](https://yschroe.github.io/chessalyzer/)**.
 
 ## Installation
 
@@ -28,7 +29,7 @@ Guides for installation, basic usage, the analysis pipeline, built-in and custom
 npm install chessalyzer
 ```
 
-Requires any JavaScript runtime, Node.js ≥ 22 or Bun recommended.
+Requires any Node.js-compatible runtime, Node.js ≥ 22 or Bun recommended.
 
 ## Getting started
 

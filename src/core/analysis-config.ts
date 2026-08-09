@@ -1,6 +1,6 @@
 import type { GameProcessorConfig } from '#core/analysis-runtime';
 import { TrackerHost } from '#core/tracker-host';
-import { resolveEffectiveReplayMode } from '#replay/replay-mode';
+import { resolveReplayMode } from '#replay/replay-mode';
 import { BUILTIN_TRACKER_IDS } from '#trackers/builtin-registry';
 import { assertMultithreadTrackerDef, assertTrackerInstance } from '#trackers/define-tracker';
 import type { AnalyzeOptions, AnalyzeRun, WorkerOptions } from '#types/analysis';
@@ -19,6 +19,7 @@ export interface NormalizedAnalyzeOptions {
 /** Instances currently owned by an in-flight `analyzePGN` call. */
 const inFlightInstances = new WeakSet<TrackerInstance>();
 
+/** Whether the passed config requires headers to be parsed. */
 function resolveParseHeaders(
     explicit: boolean | 'auto' | undefined,
     needsHeaders: boolean,
@@ -134,7 +135,7 @@ export function normalizeAnalyzeOptions(options: AnalyzeOptions = {}): Normalize
               }))
             : undefined;
 
-        const replayMode = resolveEffectiveReplayMode(
+        const replayMode = resolveReplayMode(
             instances.some((instance) => instance.def.kind === 'move'),
             options.replay,
         );
