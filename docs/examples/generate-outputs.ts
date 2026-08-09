@@ -126,10 +126,9 @@ print(
 
 // --- custom move tracker numbers (custom trackers walkthrough) ---
 const counter = defineMoveTracker({
-    id: 'half-move-counter',
-    init: () => ({ halfMoves: 0, captures: 0 }),
+    id: 'capture-counter',
+    init: () => ({ captures: 0 }),
     track: (state, actions) => {
-        state.halfMoves += 1;
         for (const action of actions) {
             if (action.type === 'capture') {
                 state.captures += 1;
@@ -137,12 +136,11 @@ const counter = defineMoveTracker({
         }
     },
     merge: (state, other) => {
-        state.halfMoves += other.halfMoves;
         state.captures += other.captures;
     },
 })();
 await analyzePGN(PGN, { trackers: [counter], workers: false });
-print('HALF_MOVE_COUNTER_STATE', json(counter.state));
+print('CAPTURE_COUNTER_STATE', json(counter.state));
 
 // --- error handling (skip-game on a file with a broken 4th game) ---
 const badGame = `

@@ -7,18 +7,17 @@ The built-in trackers cover common questions, but the fun starts when you have a
 
 ## A first tracker in five minutes
 
-Let's count half-moves and captures — not built in, and only a few lines away. Create a file for your tracker:
+Let's count captures across a file — a single total the built-ins don't hand you, and only a few lines away. Create a new separate file for your tracker:
 
 ```typescript
-// half-move-counter.ts
+// capture-counter.ts
 import { defineMoveTracker } from 'chessalyzer/trackers';
 
 export default defineMoveTracker({
-    id: 'half-move-counter',
+    id: 'capture-counter',
     workerModule: import.meta.url,
-    init: () => ({ halfMoves: 0, captures: 0 }),
+    init: () => ({ captures: 0 }),
     track: (state, actions) => {
-        state.halfMoves += 1;
         for (const action of actions) {
             if (action.type === 'capture') {
                 state.captures += 1;
@@ -26,7 +25,6 @@ export default defineMoveTracker({
         }
     },
     merge: (state, other) => {
-        state.halfMoves += other.halfMoves;
         state.captures += other.captures;
     },
 });
@@ -36,31 +34,59 @@ Then use it like any built-in:
 
 ```typescript
 import { analyzePGN } from 'chessalyzer';
-import halfMoveCounter from './half-move-counter.ts';
+import captureCounter from './capture-counter.ts';
 
-const counter = halfMoveCounter();
+const counter = captureCounter();
 
 await analyzePGN('games.pgn', { trackers: [counter] });
 
-console.log(counter.state); // { halfMoves: 19, captures: 3 }
+console.log(counter.state); // { captures: 3 }
 ```
 
-Nineteen half-moves and three captures on our [example file](/docs/quickstart#the-example-file) — that's the whole API. `defineGameTracker` works the same way, except its `track(state, game)` receives one parsed game (headers, result, move list) at a time instead of per-move actions.
+Three captures on our [example file](/docs/quickstart#the-example-file) — that's the whole API.
 
 ## Why the separate file and the extra fields?
 
-<Callout type="info" title="What workerModule is for">
-    By default, Chessalyzer analyzes on several threads at once. Threads can't receive functions
-    from your main program — so each worker *imports your tracker module itself* and creates its own
-    copy via the default-exported factory. That's why the definition needs an `id` and
-    `workerModule: import.meta.url`, and why state travels back as plain data to be combined with
-    your `merge` function. [Multithreading](/docs/multithreading) walks through the whole flow.
-</Callout>
+By default, Chessalyzer analyzes on several threads at once. Threads can't receive functions
+from your main program — so each worker _imports your tracker module itself_ and creates its own
+copy via the default-exported factory. That's why the definition needs an `id` and
+`workerModule: import.meta.url`, and why state travels back as plain data to be combined with
+your `merge` function. [Multithreading](/docs/multithreading) walks through the whole flow.
 
 Two consequences worth remembering:
 
 - **State must be plain data** (numbers, strings, arrays, plain objects) — no class instances, Maps, or functions, because it crosses thread boundaries via structured clone.
-- **Options go to the factory call**, and they must be plain data too: `halfMoveCounter()` takes none, but a `myTracker({ minElo: 2000 })` would forward `{ minElo: 2000 }` to `init(options)` on every worker.
+- **Options go to the factory call**, and they must be plain data too: `captureCounter()` takes none, but a `myTracker({ minElo: 2000 })` would forward `{ minElo: 2000 }` to `init(options)` on every worker.
+
+## What `track` receives
+
+Move and game trackers see different inputs. The hook signature is the same (`track(state, …)`), but what gets passed in depends on which factory you used.
+
+### Move trackers
+
+`defineMoveTracker` calls `track(state, actions)` **once per half-move**. The second argument is an `Action[]` — one or more replay events for that half-move, not a single object.
+
+Each action is a discriminated union on `type`:
+
+```typescript
+// Quiet move / castle leg
+{ type: 'move', san, player, piece, from, to, castle? }
+
+// Capture (incl. en passant)
+{ type: 'capture', san, player, takingPiece, takenPiece, on, from?, enPassant? }
+
+// Promotion (extra action on the same half-move)
+{ type: 'promote', san, player, promotion, on }
+```
+
+How many actions you get per call depends on the move:
+
+- **Quiet move** — usually one `move` action.
+- **Capture** — typically a `capture` followed by a `move`.
+- **Promotion** — adds a `promote` on the same call (alongside the move or capture).
+- **Castling** — two `move` actions (king leg, then rook leg); both carry the same `castle` flag.
+
+Loop over `actions` and branch on `action.type` — that's the pattern in the example above.
 
 <Callout type="warn" title="Action objects are recycled">
     In a move tracker's `track`, the `Action` objects are reused from half-move to half-move for
@@ -68,10 +94,21 @@ Two consequences worth remembering:
     action itself, or you'll be looking at the next move's data.
 </Callout>
 
-More action details worth knowing:
+**Piece names** (`action.piece`, `takingPiece`, `takenPiece`) identify pieces by origin square — `Pa`, `Nb`, … — with promoted pawns getting synthetic names like `Q17`. Use `isStartingPieceName()` before indexing starting-piece matrices.
 
-- **Castling is two actions** (king leg, then rook leg); both carry the same `castle` flag.
-- **Piece names** (`action.piece`, `takingPiece`, `takenPiece`) identify pieces by origin square — `Pa`, `Nb`, … — with promoted pawns getting synthetic names like `Q17`. Use `isStartingPieceName()` before indexing starting-piece matrices.
+### Game trackers
+
+`defineGameTracker` works the same way, except `track(state, game)` runs **once per game** with a `ParsedGame`:
+
+```typescript
+{
+    moves: [{ san: 'e4' }, { san: 'e5' }, /* … */],
+    result?: '1-0' | '0-1' | '1/2-1/2' | '*',
+    headers?: { White: 'alice', BlackElo: '1892', /* … */ },
+}
+```
+
+`moves` is the mainline in SAN; `result` comes from movetext and/or the `Result` tag; `headers` is present when header parsing is on (automatic when you use a game tracker or a [`filter`](/docs/filters)). See [Parsing PGN](/docs/parsing-pgn) for a full annotated example.
 
 ## Which hook runs where?
 
@@ -87,17 +124,22 @@ With the default multithreaded pool, per-game work happens on the workers, and o
 
 Use `onGameEnd(state)` for per-game flush logic and `onFinish(state)` for final touches like computing averages — knowing that `onFinish` only ever sees fully merged state.
 
-## Types you'll want
+## Helpers and types
 
 ```typescript
-import type { ParsedGame, ParsedMove } from 'chessalyzer/pgn';
-import type { Action } from 'chessalyzer/replay';
-import type { PieceName, Square } from 'chessalyzer/board';
 import { defineGameTracker, defineMoveTracker } from 'chessalyzer/trackers';
+import type { Action } from 'chessalyzer/replay';
+import type { ParsedGame, ParsedMove } from 'chessalyzer/pgn';
+import type { PieceName, Square } from 'chessalyzer/board';
 ```
+
+- **`defineMoveTracker` / `defineGameTracker`** — factories that turn your definition into a tracker. Default-export the result from your module so workers can import it.
+- **`Action`** — the per-half-move replay events passed to move `track` (see [What `track` receives](#what-track-receives)).
+- **`ParsedGame` / `ParsedMove`** — the game summary passed to game `track` (`ParsedMove` is just `{ san }` today).
+- **`PieceName` / `Square`** — piece identity and board squares on action fields (`'Pa'`, `'e4'`, …).
 
 ## Good to know
 
-- `workerModule: import.meta.url` needs an unbundled Node ≥ 22 or Bun runtime (workers import the file by its URL).
+- `workerModule: import.meta.url` needs an unbundled Node ≥ 22 (or compatible) runtime (workers import the file by its URL).
 - A [`filter`](/docs/filters) on the same `analyzePGN` call forces single-threaded mode, so custom trackers in a filtered analysis don't need the multithreading setup.
 - [manual-tests/custom-game-tracker.ts](https://github.com/yschroe/chessalyzer/blob/main/manual-tests/custom-game-tracker.ts) is a minimal working example you can run.
