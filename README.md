@@ -1,4 +1,6 @@
-# ♟️ Chessalyzer
+![Chessalyzer](docs/public/logo.svg)
+
+# Chessalyzer
 
 A JavaScript library for batch-analyzing chess PGN files — parse games, replay moves, and collect statistics with modular trackers.
 
