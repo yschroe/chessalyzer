@@ -6,9 +6,9 @@
     --home-ink: var(--color-fd-foreground);
     --home-ink-muted: var(--color-fd-muted-foreground);
     --home-square-light: #d5e0cc;
-    --home-square-dark: #b3c4a6;
+    --home-square-dark: #a6c4c1;
     --home-heat: #d98508;
-    --home-wash: #e4ebe0;
+    --home-wash: #e0e7eb;
     --home-wash-start: 0.72;
     --home-wash-mid: 0.42;
     --home-heat-strength: 0.42;
@@ -23,8 +23,8 @@
 .dark .home-page {
     --home-square-light: #1e4a38;
     --home-square-dark: #163528;
-    --home-heat: #f0b030;
-    --home-wash: #0f241c;
+    --home-heat: #fbad13;
+    --home-wash: #0f1e24;
     --home-wash-start: 0.68;
     --home-wash-mid: 0.38;
     --home-heat-strength: 0.48;
