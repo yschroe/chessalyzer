@@ -1,4 +1,5 @@
 import tailwindcss from '@tailwindcss/vite';
+import { remarkImage } from 'fumadocs-core/mdx-plugins';
 import { fumadocsMdx } from 'fumadocs-mdx/vite';
 import { createLogger } from 'vite';
 import { defineConfig } from 'waku/config';
@@ -37,6 +38,16 @@ export default defineConfig({
         optimizeDeps: {
             include: ['use-sync-external-store/shim/with-selector.js'],
         },
-        plugins: [tailwindcss(), fumadocsMdx()],
+        plugins: [
+            tailwindcss(),
+            fumadocsMdx({
+                globalOptions: {
+                    mdxOptions: {
+                        // Disable image path import rewriting -> points to wrong path
+                        remarkPlugins: [[remarkImage, { useImport: false }]],
+                    },
+                },
+            }),
+        ],
     },
 });
