@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [4.0.0] - 2026-08-09
 
-Version 4 is a more or less full rewrite of the library with many improvements. The update focused on cleaning up the public API, make the analysis pipeline faster on large files, and write documentation that walks you from initial setup to implementing your own custom trackers with clear examples.
+Version 4 is a partial rewrite of the library with many improvements. The update focused on cleaning up the public API, make the analysis pipeline faster on large files, and write documentation that walks you from initial setup to implementing your own custom trackers with clear examples.
 
 ### Highlights
 
