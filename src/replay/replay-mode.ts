@@ -11,6 +11,7 @@ export type ReplayMode = 'skip' | 'board' | 'actions';
  * Resolve replay mode from tracker presence.
  * Count-only runs skip board replay (~10% faster on large fixtures; bench 2026-07).
  * Single call-site helper so {@link GameReplayer} does not infer mode from trackers.
+ * @internal Exported for tests.
  */
 export function resolveReplayMode(hasMoveTrackers: boolean): ReplayMode {
     return hasMoveTrackers ? 'actions' : 'skip';

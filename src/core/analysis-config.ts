@@ -19,6 +19,7 @@ export interface NormalizedAnalyzeOptions {
 /** Instances currently owned by an in-flight `analyzePGN` call. */
 const inFlightInstances = new WeakSet<TrackerInstance>();
 
+/** Whether the passed config requires headers to be parsed. */
 function resolveParseHeaders(
     explicit: boolean | 'auto' | undefined,
     needsHeaders: boolean,
