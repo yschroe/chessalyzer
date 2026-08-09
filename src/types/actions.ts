@@ -11,17 +11,15 @@ export interface MoveCoords {
 /** Shared fields on replay {@link Action} variants. */
 interface BaseAction {
     type: 'move' | 'capture' | 'promote';
+    /** Standard Algebraic Notation of the half-move. */
     san: string;
+    /** Side that played this half-move (`'w'` or `'b'`). */
     player: PlayerColor;
 }
 
 /** A quiet move or castle king leg. */
 export interface MoveAction extends BaseAction, MoveCoords {
     type: 'move';
-    /** Standard Algebraic Notation of the half-move. */
-    san: string;
-    /** Side that played this half-move (`'w'` or `'b'`). */
-    player: PlayerColor;
     /** Piece on the origin square after a successful SAN decode (starting or promoted name). */
     piece: PieceName;
     /** Present on the king leg when the SAN is a castle. */
@@ -31,10 +29,6 @@ export interface MoveAction extends BaseAction, MoveCoords {
 /** A capture (including en passant). */
 export interface CaptureAction extends BaseAction {
     type: 'capture';
-    /** Standard Algebraic Notation of the half-move. */
-    san: string;
-    /** Side that played this half-move (`'w'` or `'b'`). */
-    player: PlayerColor;
     /** Capturing piece (starting or promoted name). */
     takingPiece: PieceName;
     /** Captured piece (starting or promoted name). */
@@ -50,10 +44,6 @@ export interface CaptureAction extends BaseAction {
 /** A pawn promotion (may accompany a move or capture in the same half-move). */
 export interface PromoteAction extends BaseAction {
     type: 'promote';
-    /** Standard Algebraic Notation of the half-move. */
-    san: string;
-    /** Side that played this half-move (`'w'` or `'b'`). */
-    player: PlayerColor;
     /** Promotion piece letter (`Q`, `R`, `B`, or `N`). */
     promotion: PromotionToken;
     /** Square where the pawn promoted. */
