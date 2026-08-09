@@ -21,7 +21,7 @@ await analyzePGN('games.pgn', {
 });
 ```
 
-Each run accumulates into its own tracker instances: on our [example file](/docs/quickstart#the-example-file), `high.state` sees only alice's 2114-ELO game (7 half-moves), while `low.state` sees only the 1650 game (4 half-moves).
+Each run accumulates into its own tracker instances: on our [example file](/docs/quickstart#the-example-file), `high.state` sees only alice's 2114-ELO game (7 half-moves), while `low.state` sees only blunderbuss' 1650 game (4 half-moves).
 
 <Callout type="warn" title="One instance per group">
     Pass **distinct tracker instances** to each run (`tileTracker()` twice, not one instance
