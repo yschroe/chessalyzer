@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.0.0-beta.2] - 2026-08-09
+
 ### Added
 
 - **`MoveCoords`** on `chessalyzer/replay` and `chessalyzer/trackers` — `{ from, to }` square pair shared by `MoveAction` and custom move trackers.
