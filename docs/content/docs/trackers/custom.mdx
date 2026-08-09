@@ -68,7 +68,7 @@ Two consequences worth remembering:
     action itself, or you'll be looking at the next move's data.
 </Callout>
 
-More action details that tend to surprise people:
+More action details worth knowing:
 
 - **Castling is two actions** (king leg, then rook leg); both carry the same `castle` flag.
 - **Piece names** (`action.piece`, `takingPiece`, `takenPiece`) identify pieces by origin square — `Pa`, `Nb`, … — with promoted pawns getting synthetic names like `Q17`. Use `isStartingPieceName()` before indexing starting-piece matrices.
