@@ -11,7 +11,7 @@ function renderHeatmap(data: HeatmapData, write: (chunk: string) => void): void 
     const bgColor = [255, 255, 255];
     const largestVal = Math.max(data.max, Math.abs(data.min));
 
-    for (const row of data.map) {
+    for (const row of data.grid) {
         for (let cnt = 0; cnt < 2; cnt += 1) {
             for (const cellVal of row) {
                 let val = cellVal;

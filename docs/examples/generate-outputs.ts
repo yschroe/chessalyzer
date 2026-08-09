@@ -76,7 +76,7 @@ for await (const game of streamParsePGN(PGN, { headers: true })) {
 const heat = generateHeatmap(tiles.state, TileHeatmapPresets.TILE_OCC_ALL);
 print('HEATMAP_MIN_MAX', json({ min: heat.min, max: heat.max }));
 
-const rows = heat.map.map((row, i) => {
+const rows = heat.grid.map((row, i) => {
     const rank = 8 - i;
     const cells = row.map((v) => (Math.round(v * 100) / 100).toFixed(2).padStart(6)).join(' ');
     return `${rank}  ${cells}`;
@@ -114,7 +114,7 @@ const comparison = generateComparisonHeatmap(high.state, low.state, ({ data, squ
 });
 print('COMPARISON_MIN_MAX', json({ min: comparison.min, max: comparison.max }));
 
-const compRows = comparison.map.map((row, i) => {
+const compRows = comparison.grid.map((row, i) => {
     const rank = 8 - i;
     const cells = row.map((v) => (Math.round(v * 100) / 100).toFixed(2).padStart(7)).join(' ');
     return `${rank}  ${cells}`;

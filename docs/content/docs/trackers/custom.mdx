@@ -76,14 +76,14 @@ Each action is a discriminated union on `type`:
 { type: 'capture', san, player, takingPiece, takenPiece, on, from?, enPassant? }
 
 // Promotion (extra action on the same half-move)
-{ type: 'promote', san, player, promotion, on }
+{ type: 'promotion', san, player, promotion, on }
 ```
 
 How many actions you get per call depends on the move:
 
 - **Quiet move** — usually one `move` action.
 - **Capture** — typically a `capture` followed by a `move`.
-- **Promotion** — adds a `promote` on the same call (alongside the move or capture).
+- **Promotion** — adds a `promotion` on the same call (alongside the move or capture).
 - **Castling** — two `move` actions (king leg, then rook leg); both carry the same `castle` flag.
 
 Loop over `actions` and branch on `action.type` — that's the pattern in the example above.

@@ -4,7 +4,7 @@ import type { HeatmapPieceRef } from '#trackers/piece-types';
 /** Numeric heatmap grid plus value range for rendering or normalization. */
 export interface HeatmapData {
     /** 8×8 values; row 0 is rank 8, column 0 is the a-file (matches board indexing). */
-    map: number[][];
+    grid: number[][];
     /** Minimum cell value across the grid. */
     min: number;
     /** Maximum cell value across the grid. */

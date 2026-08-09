@@ -31,7 +31,7 @@ Each run accumulates into its own tracker instances: on our [example file](/docs
 
 ## Diffing two heatmaps
 
-`generateComparisonHeatmap(stateA, stateB, fn)` runs the same per-square function over both states and returns the **percentage difference** per square: positive means group A scored higher, negative means group B did, and `0` whenever either side has nothing to compare. The result is a regular [`HeatmapData`](/docs/heatmaps) (`{ map, min, max }`), so `printHeatmap` works on it — blue cells favor group B, orange cells favor group A:
+`generateComparisonHeatmap(stateA, stateB, fn)` runs the same per-square function over both states and returns the **percentage difference** per square: positive means group A scored higher, negative means group B did, and `0` whenever either side has nothing to compare. The result is a regular [`HeatmapData`](/docs/heatmaps) (`{ grid, min, max }`), so `printHeatmap` works on it — blue cells favor group B, orange cells favor group A:
 
 ```typescript
 const diff = generateComparisonHeatmap(high.state, low.state, ({ data, square }) => {
@@ -44,7 +44,7 @@ const diff = generateComparisonHeatmap(high.state, low.state, ({ data, square })
 Asking "where did white pieces spend their time?" for both groups on the example file:
 
 ```text
-// diff.map — percentage points, files a–h, rank 8 on top
+// diff.grid — percentage points, files a–h, rank 8 on top
         a      b      c      d      e       f       g      h
 8     0.00   0.00   0.00   0.00   0.00    0.00    0.00   0.00
 7     0.00   0.00   0.00   0.00   0.00    0.00    0.00   0.00

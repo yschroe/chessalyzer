@@ -138,7 +138,7 @@ const heatmapData = generateHeatmap(tiles.state, TileHeatmapPresets.TILE_OCC_ALL
 printHeatmap(heatmapData); // colored 8×8 board in your terminal
 ```
 
-`TILE_OCC_ALL` answers "how busy was each square?" — the percentage of half-moves a square had a piece on it. Underneath the colors, `heatmapData` is plain data (`{ map, min, max }`); here's the actual `map` for our file, with files a–h left to right and rank 8 on top:
+`TILE_OCC_ALL` answers "how busy was each square?" — the percentage of half-moves a square had a piece on it. Underneath the colors, `heatmapData` is plain data (`{ grid, min, max }`); here's the actual `grid` for our file, with files a–h left to right and rank 8 on top:
 
 ```text
          a      b      c      d      e      f      g      h

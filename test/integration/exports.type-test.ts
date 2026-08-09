@@ -34,7 +34,7 @@ const action: Action = {
     from: 'e2',
     to: 'e4',
 };
-const heatmap: HeatmapData = { map: [[0]], min: 0, max: 0 };
+const heatmap: HeatmapData = { grid: [[0]], min: 0, max: 0 };
 const heatmapFn: HeatmapFn = (args) => args.square.length + (args.startingPiece ? 1 : 0);
 const heatmapPiece: HeatmapPieceRef = { color: 'w', name: 'Qd' };
 const runResult: AnalyzeRunResult = { gameCount: 0, moveCount: 0 };

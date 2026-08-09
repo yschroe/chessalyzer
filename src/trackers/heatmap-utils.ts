@@ -31,7 +31,7 @@ function renderHeatmap<T>(data: T, fun: HeatmapFn<T>): HeatmapData {
         map.push(dataRow);
     }
 
-    return { map, min, max };
+    return { grid: map, min, max };
 }
 
 /**
@@ -72,8 +72,8 @@ export function generateComparisonHeatmap<T>(
 
     for (let i = 0; i < 8; i += 1) {
         const dataRow: number[] = [];
-        const row0 = map0.map[i];
-        const row1 = map1.map[i];
+        const row0 = map0.grid[i];
+        const row1 = map1.grid[i];
         if (!row0 || !row1) continue;
         for (let j = 0; j < 8; j += 1) {
             const a = row0[j];
@@ -91,5 +91,5 @@ export function generateComparisonHeatmap<T>(
         map.push(dataRow);
     }
 
-    return { map, min, max };
+    return { grid: map, min, max };
 }

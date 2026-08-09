@@ -48,7 +48,7 @@ describe('TileTracker golden (en-passant)', () => {
             expect(data.gameCount).toBe(1);
             expect(tiles.state.movesTotal).toBe(golden.movesTotal);
             const heat = generateHeatmap(tiles.state, TileHeatmapPresets.TILE_OCC_ALL);
-            expect(heat.map[4]?.[4]).toBe(golden.e4TileOccAll);
+            expect(heat.grid[4]?.[4]).toBe(golden.e4TileOccAll);
         });
     }
 

@@ -10,7 +10,7 @@ export interface MoveCoords {
 
 /** Shared fields on replay {@link Action} variants. */
 interface BaseAction {
-    type: 'move' | 'capture' | 'promote';
+    type: 'move' | 'capture' | 'promotion';
     /** Standard Algebraic Notation of the half-move. */
     san: string;
     /** Side that played this half-move (`'w'` or `'b'`). */
@@ -42,8 +42,8 @@ export interface CaptureAction extends BaseAction {
 }
 
 /** A pawn promotion (may accompany a move or capture in the same half-move). */
-export interface PromoteAction extends BaseAction {
-    type: 'promote';
+export interface PromotionAction extends BaseAction {
+    type: 'promotion';
     /** Promotion piece letter (`Q`, `R`, `B`, or `N`). */
     promotion: PromotionToken;
     /** Square where the pawn promoted. */
@@ -51,4 +51,4 @@ export interface PromoteAction extends BaseAction {
 }
 
 /** One replayed half-move emitted in `'actions'` replay mode. */
-export type Action = MoveAction | CaptureAction | PromoteAction;
+export type Action = MoveAction | CaptureAction | PromotionAction;
