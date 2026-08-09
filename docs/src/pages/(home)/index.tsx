@@ -100,11 +100,11 @@ export default function Home() {
             <div className="z-10 flex flex-1 flex-col justify-center">
                 <div className="px-6 py-24 sm:px-10 lg:px-36">
                     <p className="home-brand mb-5 flex items-end gap-2 text-5xl font-semibold tracking-tight sm:text-6xl md:text-7xl">
-                        <Logo className="size-22" />
+                        <Logo className="size-16 sm:size-20 md:size-22" />
                         Chessalyzer
                     </p>
 
-                    <h1 className="home-headline mb-4 max-w-lg text-2xl leading-snug font-medium sm:text-3xl md:text-4xl">
+                    <h1 className="home-headline mb-4 max-w-lg text-2xl font-medium sm:text-3xl md:text-4xl">
                         Batch-analyze chess games at scale
                     </h1>
 
