@@ -236,9 +236,9 @@ if (corpusAvailable) {
                         state,
                         PieceHeatmapPresets.PIECE_CAPTURED({ color: 'b', name: 'Ra' }),
                     );
-                    expect(data.map[0]?.[0]).toBe(0);
-                    expect(data.map[1]?.[0]).toBe(0);
-                    expect(data.map[7]?.[0]).toBe(
+                    expect(data.grid[0]?.[0]).toBe(0);
+                    expect(data.grid[1]?.[0]).toBe(0);
+                    expect(data.grid[7]?.[0]).toBe(
                         entry.golden.pieceTracker.heatmap.PIECE_CAPTURED_a8,
                     );
                 });
@@ -248,9 +248,9 @@ if (corpusAvailable) {
                         state,
                         PieceHeatmapPresets.PIECE_CAPTURED_BY({ color: 'b', name: 'Ra' }),
                     );
-                    expect(data.map[0]?.[0]).toBe(0);
-                    expect(data.map[1]?.[0]).toBe(0);
-                    expect(data.map[7]?.[0]).toBe(
+                    expect(data.grid[0]?.[0]).toBe(0);
+                    expect(data.grid[1]?.[0]).toBe(0);
+                    expect(data.grid[7]?.[0]).toBe(
                         entry.golden.pieceTracker.heatmap.PIECE_CAPTURED_BY_a8,
                     );
                 });
@@ -260,9 +260,9 @@ if (corpusAvailable) {
                         state,
                         customPieceHeatmapFunc({ color: 'b', name: 'Ra' }),
                     );
-                    expect(data.map[0]?.[0]).toBe(0);
-                    expect(data.map[1]?.[0]).toBe(0);
-                    expect(data.map[7]?.[0]).toBe(entry.golden.pieceTracker.heatmap.custom_a8);
+                    expect(data.grid[0]?.[0]).toBe(0);
+                    expect(data.grid[1]?.[0]).toBe(0);
+                    expect(data.grid[7]?.[0]).toBe(entry.golden.pieceTracker.heatmap.custom_a8);
                 });
             });
         });

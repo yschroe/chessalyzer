@@ -22,6 +22,7 @@ import {
     pieceTracker,
     tileTracker,
     TileHeatmapPresets,
+    printHeatmap,
 } from '../../src/trackers/index';
 
 const PGN = fileURLToPath(new URL('./games.pgn', import.meta.url));
@@ -75,7 +76,7 @@ for await (const game of streamParsePGN(PGN, { headers: true })) {
 const heat = generateHeatmap(tiles.state, TileHeatmapPresets.TILE_OCC_ALL);
 print('HEATMAP_MIN_MAX', json({ min: heat.min, max: heat.max }));
 
-const rows = heat.map.map((row, i) => {
+const rows = heat.grid.map((row, i) => {
     const rank = 8 - i;
     const cells = row.map((v) => (Math.round(v * 100) / 100).toFixed(2).padStart(6)).join(' ');
     return `${rank}  ${cells}`;
@@ -84,6 +85,8 @@ print(
     'HEATMAP_VALUES_GRID',
     `\n    ${['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'].map((f) => f.padStart(6)).join(' ')}\n${rows.join('\n')}`,
 );
+print('HEATMAP_PRINT', '');
+printHeatmap(heat);
 
 // --- filter (filters) ---
 const filtered = tileTracker();
@@ -97,7 +100,6 @@ print('FILTER_RESULT', json(filterResult));
 const high = tileTracker();
 const low = tileTracker();
 await analyzePGN(PGN, {
-    headers: true,
     runs: [
         { trackers: [high], filter: (game) => Number(game.headers?.WhiteElo) > 2000 },
         { trackers: [low], filter: (game) => Number(game.headers?.WhiteElo) < 1700 },
@@ -106,12 +108,11 @@ await analyzePGN(PGN, {
 
 const comparison = generateComparisonHeatmap(high.state, low.state, ({ data, square }) => {
     const cell = data.squares[square];
-    if (!cell) return 0;
     return (cell.w.total.occupiedFor * 100) / data.movesTotal;
 });
 print('COMPARISON_MIN_MAX', json({ min: comparison.min, max: comparison.max }));
 
-const compRows = comparison.map.map((row, i) => {
+const compRows = comparison.grid.map((row, i) => {
     const rank = 8 - i;
     const cells = row.map((v) => (Math.round(v * 100) / 100).toFixed(2).padStart(7)).join(' ');
     return `${rank}  ${cells}`;
@@ -120,13 +121,14 @@ print(
     'COMPARISON_VALUES_GRID',
     `\n    ${['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'].map((f) => f.padStart(7)).join(' ')}\n${compRows.join('\n')}`,
 );
+print('COMPARISON_PRINT', '');
+printHeatmap(comparison);
 
 // --- custom move tracker numbers (custom trackers walkthrough) ---
 const counter = defineMoveTracker({
-    id: 'half-move-counter',
-    init: () => ({ halfMoves: 0, captures: 0 }),
+    id: 'capture-counter',
+    init: () => ({ captures: 0 }),
     track: (state, actions) => {
-        state.halfMoves += 1;
         for (const action of actions) {
             if (action.type === 'capture') {
                 state.captures += 1;
@@ -134,12 +136,11 @@ const counter = defineMoveTracker({
         }
     },
     merge: (state, other) => {
-        state.halfMoves += other.halfMoves;
         state.captures += other.captures;
     },
 })();
 await analyzePGN(PGN, { trackers: [counter], workers: false });
-print('HALF_MOVE_COUNTER_STATE', json(counter.state));
+print('CAPTURE_COUNTER_STATE', json(counter.state));
 
 // --- error handling (skip-game on a file with a broken 4th game) ---
 const badGame = `

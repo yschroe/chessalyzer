@@ -1,7 +1,7 @@
 import ChessBoard from '#board/chess-board';
 import PieceFinder from '#replay/piece-finder';
 import type { PawnResolution, PieceResolution } from '#replay/san-resolver';
-import type { Action, CaptureAction, MoveAction, PromoteAction } from '#types/actions';
+import type { Action, CaptureAction, MoveAction, PromotionAction } from '#types/actions';
 import type { PlayerColor } from '#types/tokens';
 
 /**
@@ -47,7 +47,7 @@ export default class SanContext {
 
     readonly captureAction: CaptureAction;
 
-    readonly promoteAction: PromoteAction;
+    readonly promoteAction: PromotionAction;
 
     /** Cleared (`length = 0`) before each `SanDecoder.decodeSan()` call; same Action objects are pushed back in. */
     readonly outActions: Action[] = [];
@@ -77,7 +77,7 @@ export default class SanContext {
         };
 
         this.promoteAction = {
-            type: 'promote',
+            type: 'promotion',
             // Prefilled with placeholder values to avoid conditional checks.
             san: '',
             player: 'w',

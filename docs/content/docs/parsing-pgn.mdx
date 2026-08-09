@@ -21,31 +21,31 @@ console.log(games[0].moves[0].san); // 'e4'
 
 You get back an array of `ParsedGame` — one object per game, in file order. This is the real thing for our example file (games two and three trimmed for brevity, they look the same):
 
-```json
+```json5
 [
     {
-        "moves": [
-            { "san": "e4" },
-            { "san": "e5" },
-            { "san": "Bc4" },
-            { "san": "Nc6" },
-            { "san": "Qh5" },
-            { "san": "Nf6" },
-            { "san": "Qxf7" }
+        moves: [
+            { san: 'e4' },
+            { san: 'e5' },
+            { san: 'Bc4' },
+            { san: 'Nc6' },
+            { san: 'Qh5' },
+            { san: 'Nf6' },
+            { san: 'Qxf7' },
         ],
-        "result": "1-0",
-        "headers": {
-            "Event": "Casual Blitz game",
-            "Site": "https://lichess.org/a1b2c3d4",
-            "Date": "2024.05.12",
-            "White": "alice",
-            "Black": "blunderbuss",
-            "Result": "1-0",
-            "WhiteElo": "2114",
-            "BlackElo": "1892",
-            "ECO": "C23"
-        }
-    }
+        result: '1-0',
+        headers: {
+            Event: 'Casual Blitz game',
+            Site: 'https://lichess.org/a1b2c3d4',
+            Date: '2024.05.12',
+            White: 'alice',
+            Black: 'blunderbuss',
+            Result: '1-0',
+            WhiteElo: '2114',
+            BlackElo: '1892',
+            ECO: 'C23',
+        },
+    },
     // …two more games
 ]
 ```
@@ -56,8 +56,8 @@ A few things worth knowing about this shape:
 - **`result`** is `'1-0'`, `'0-1'`, `'1/2-1/2'`, or `'*'` (unfinished).
 - **`headers`** is only present with `headers: true`. Without it you still get `result` (from the movetext), just not the tag pairs:
 
-```json
-[{ "moves": [{ "san": "e4" }, { "san": "e5" } /* … */], "result": "1-0" }]
+```json5
+[{ moves: [{ san: 'e4' }, { san: 'e5' } /* … */], result: '1-0' }]
 ```
 
 ## streamParsePGN — one game at a time

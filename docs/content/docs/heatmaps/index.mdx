@@ -30,7 +30,7 @@ printHeatmap(heatmapData);
 
 ```json5
 {
-    map: [
+    grid: [
         [100, 84.21 /* … */],
         // …8 rows of 8 values
     ],
@@ -39,7 +39,7 @@ printHeatmap(heatmapData);
 }
 ```
 
-- `map` is an 8×8 grid of values. **Row 0 is rank 8, column 0 is the a-file** — the board as white sees it from behind.
+- `grid` is an 8×8 grid of values. **Row 0 is rank 8, column 0 is the a-file** — the board as white sees it from behind.
 - `min` / `max` are the extremes across the grid, useful for scaling colors in your own visualization.
 
 For the three-game example file, the occupation map looks like this (files a–h left to right, rank 8 on top — `e4` sits at row 4, column 4 with 68.42):
@@ -58,7 +58,7 @@ For the three-game example file, the occupation map looks like this (files a–h
 
 <Callout type="idea" title="Saving instead of printing">
     `printHeatmap` writes to stdout. Its sibling `heatmapToString(heatmapData)` returns the same
-    colored board as a string — handy for logs, files, or Slack messages.
+    colored board as a string — handy for logs and debugging.
 </Callout>
 
 ## Choosing what one cell means

@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **`HeatmapData.map` → `grid` (breaking):** the 8×8 value matrix on `HeatmapData` is now `grid` instead of `map`, avoiding confusion with `Array.prototype.map`.
+- **`Action` promotion discriminant (breaking):** `type: 'promote'` is now `type: 'promotion'`; the interface was renamed `PromoteAction` → `PromotionAction`.
 - **`AnalyzeResult` shape (breaking):** `durationMs` and `movesPerSecond` are now nested under a dedicated `perf: AnalyzePerformance` sub-object (`result.perf.durationMs`, `result.perf.movesPerSecond`).
 - **`TileTrackerState` shape (breaking):** `tiles` (8×8 grid) → `squares: Record<Square, SquareStats>`. Access per-square stats with `state.squares['e4']` instead of `tileAt(state.tiles, 'e4')`.
 - **Tile tracker type renames (breaking):** `TileStats` → `SquareCounters`, `TileColorStats` → `PlayerSquareStats`, `TileCell` → `SquareStats`. `TileGrid` removed from the public API.

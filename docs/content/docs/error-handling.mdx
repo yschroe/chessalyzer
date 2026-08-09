@@ -49,22 +49,22 @@ const result = await analyzePGN('games.pgn', {
 
 The three good games are fully processed, and the result tells you exactly what was skipped:
 
-```json
+```json5
 {
-    "gameCount": 3,
-    "moveCount": 19,
-    "skippedGames": 1,
-    "errors": [
+    gameCount: 3,
+    moveCount: 19,
+    skippedGames: 1,
+    errors: [
         {
-            "code": "replay",
-            "gameIndex": 3,
-            "moveIndex": 2,
-            "san": "Nf9",
-            "reason": "IllegalMove",
-            "message": "w: No piece for move N to (7,6) found!"
-        }
+            code: 'replay',
+            gameIndex: 3,
+            moveIndex: 2,
+            san: 'Nf9',
+            reason: 'IllegalMove',
+            message: 'w: No piece for move N to (7,6) found!',
+        },
     ],
-    "runs": [{ "gameCount": 3, "moveCount": 19, "skippedGames": 1, "errors": [/* same entry */] }]
+    runs: [{ gameCount: 3, moveCount: 19, skippedGames: 1, errors: [/* same entry */] }],
 }
 ```
 

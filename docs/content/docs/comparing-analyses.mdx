@@ -13,7 +13,6 @@ const high = tileTracker();
 const low = tileTracker();
 
 await analyzePGN('games.pgn', {
-    headers: true,
     runs: [
         { trackers: [high], filter: (game) => Number(game.headers?.WhiteElo) > 2000 },
         { trackers: [low], filter: (game) => Number(game.headers?.WhiteElo) < 1700 },
@@ -21,7 +20,7 @@ await analyzePGN('games.pgn', {
 });
 ```
 
-Each run accumulates into its own tracker instances: on our [example file](/docs/quickstart#the-example-file), `high.state` sees only alice's 2114-ELO game (7 half-moves), while `low.state` sees only the 1650 game (4 half-moves).
+Each run accumulates into its own tracker instances: on our [example file](/docs/quickstart#the-example-file), `high.state` sees only alice's 2114-ELO game (7 half-moves), while `low.state` sees only blunderbuss' 1650 game (4 half-moves).
 
 <Callout type="warn" title="One instance per group">
     Pass **distinct tracker instances** to each run (`tileTracker()` twice, not one instance
@@ -31,12 +30,11 @@ Each run accumulates into its own tracker instances: on our [example file](/docs
 
 ## Diffing two heatmaps
 
-`generateComparisonHeatmap(stateA, stateB, fn)` runs the same per-square function over both states and returns the **percentage difference** per square: positive means group A scored higher, negative means group B did, and `0` whenever either side has nothing to compare. The result is a regular [`HeatmapData`](/docs/heatmaps) (`{ map, min, max }`), so `printHeatmap` works on it — blue cells favor group B, orange cells favor group A:
+`generateComparisonHeatmap(stateA, stateB, fn)` runs the same per-square function over both states and returns the **percentage difference** per square: positive means group A scored higher, negative means group B did, and `0` whenever either side has nothing to compare. The result is a regular [`HeatmapData`](/docs/heatmaps) (`{ grid, min, max }`), so `printHeatmap` works on it — blue cells favor group B, orange cells favor group A:
 
 ```typescript
 const diff = generateComparisonHeatmap(high.state, low.state, ({ data, square }) => {
     const cell = data.squares[square];
-    if (!cell) return 0;
     return (cell.w.total.occupiedFor * 100) / data.movesTotal;
 });
 ```
@@ -44,7 +42,7 @@ const diff = generateComparisonHeatmap(high.state, low.state, ({ data, square })
 Asking "where did white pieces spend their time?" for both groups on the example file:
 
 ```text
-// diff.map — percentage points, files a–h, rank 8 on top
+// diff.grid — percentage points, files a–h, rank 8 on top
         a      b      c      d      e       f       g      h
 8     0.00   0.00   0.00   0.00   0.00    0.00    0.00   0.00
 7     0.00   0.00   0.00   0.00   0.00    0.00    0.00   0.00
@@ -56,10 +54,18 @@ Asking "where did white pieces spend their time?" for both groups on the example
 1     0.00   0.00   0.00 -40.00   0.00 -133.33    0.00  0.00
 ```
 
-With one game per group this is illustrative rather than insightful — but you can already see the high-ELO game pushing a pawn to e4 early (e2 empties faster, hence −600) while the low-ELO game opened with f3. Feed it two real cohorts of a few thousand games and the same code tells you where styles actually differ.
+![Comparison heatmap 1](/comp-heat1.png)
 
-<Callout type="info" title="Filters mean one thread">
-    Runs with `filter` are analyzed single-threaded, like any filtered analysis — see [Filtering
-    games](/docs/filters). Runs *without* filters can use the worker pool and still parse the file
-    only once per chunk.
+With one game per group this is illustrative rather than insightful — but you can already see the high-ELO game pushing a pawn to e4 early (=e2 empties faster, hence −600%) while the low-ELO game opened with f3. Feed it two real cohorts of a few thousand games and the same code tells you where styles actually differ.
+
+<Callout type="info" title="Comparable data is needed">
+    Note that the f3 square in the heatmap is completely white, yet this was white's first move in
+    the lower-ELO game. This is because we don't have a value to compare against since in the
+    high-ELO game this square was never occupied. This would result in a infinitely higher value
+    which can't be displayed meaningfully. With a greater sample size this will not be a problem
+    anymore.
 </Callout>
+
+For a more meaningful example check out the following heatmap, running the same analysis on a bigger PGN file with real games. A clear trend is visible here: the higher rated player takes control over the center more often than a lower rated player.
+
+![Comparison heatmap 2](/comp-heat2.png)

@@ -1,2 +1,8 @@
 // Types
-export type { Action, CaptureAction, MoveAction, MoveCoords, PromoteAction } from '#types/actions';
+export type {
+    Action,
+    CaptureAction,
+    MoveAction,
+    MoveCoords,
+    PromotionAction,
+} from '#types/actions';

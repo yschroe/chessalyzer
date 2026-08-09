@@ -9,7 +9,7 @@ import {
     type PromotedPieceName,
 } from '#board/piece-names';
 import PiecePositions from '#board/piece-positions';
-import type { Action, MoveAction, CaptureAction, PromoteAction } from '#types/actions';
+import type { Action, MoveAction, CaptureAction, PromotionAction } from '#types/actions';
 import type { PieceToken, PlayerColor, PromotionToken } from '#types/tokens';
 
 /** Bit mask for the color of a piece. */
@@ -157,7 +157,7 @@ class ChessBoard {
                 case 'capture':
                     this.capture(action);
                     break;
-                case 'promote':
+                case 'promotion':
                     this.promote(action);
                     break;
             }
@@ -270,7 +270,7 @@ class ChessBoard {
         this.capturePiece(action.player, action.takenPiece, squareToCoords(action.on));
     }
 
-    private promote(action: PromoteAction): void {
+    private promote(action: PromotionAction): void {
         this.promotePiece(action.player, squareToCoords(action.on), action.promotion);
     }
 }
