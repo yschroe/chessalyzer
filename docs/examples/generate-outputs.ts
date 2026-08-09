@@ -100,7 +100,6 @@ print('FILTER_RESULT', json(filterResult));
 const high = tileTracker();
 const low = tileTracker();
 await analyzePGN(PGN, {
-    headers: true,
     runs: [
         { trackers: [high], filter: (game) => Number(game.headers?.WhiteElo) > 2000 },
         { trackers: [low], filter: (game) => Number(game.headers?.WhiteElo) < 1700 },
@@ -109,7 +108,6 @@ await analyzePGN(PGN, {
 
 const comparison = generateComparisonHeatmap(high.state, low.state, ({ data, square }) => {
     const cell = data.squares[square];
-    if (!cell) return 0;
     return (cell.w.total.occupiedFor * 100) / data.movesTotal;
 });
 print('COMPARISON_MIN_MAX', json({ min: comparison.min, max: comparison.max }));

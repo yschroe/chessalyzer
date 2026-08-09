@@ -24,7 +24,13 @@ console.log(result.moveCount); // 7
 
 The filter receives the same [`ParsedGame`](/docs/parsing-pgn) shape you know from the parser — `headers`, `result`, `moves`. Header values are always strings, hence the `Number(...)`. Headers are parsed automatically when a filter is present, so `game.headers` is always populated; leave `headers: false` alone unless your filter truly never looks at them.
 
-<Callout type="info" title="Why filters run single-threaded">
+<Callout type="info" title="Header keys are possibly undefined">
+    Note how we needed to use the optional chaining operator (`?.`) when accessing the `WhiteElo`
+    property. Since the exported header information can be different for each PGN database,
+    Chessalyzer can't ensure that a certain header key is present in the data.
+</Callout>
+
+<Callout type="info" title="Filters run single-threaded">
     A filter is a JavaScript closure, and closures can't be shipped to worker threads — so when a
     `filter` is present, `analyzePGN` automatically analyzes on the main thread. Just don't combine
     a filter with explicit `workers` options; that's rejected as an error. On large files this costs

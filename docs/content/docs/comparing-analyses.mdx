@@ -13,7 +13,6 @@ const high = tileTracker();
 const low = tileTracker();
 
 await analyzePGN('games.pgn', {
-    headers: true,
     runs: [
         { trackers: [high], filter: (game) => Number(game.headers?.WhiteElo) > 2000 },
         { trackers: [low], filter: (game) => Number(game.headers?.WhiteElo) < 1700 },
@@ -36,7 +35,6 @@ Each run accumulates into its own tracker instances: on our [example file](/docs
 ```typescript
 const diff = generateComparisonHeatmap(high.state, low.state, ({ data, square }) => {
     const cell = data.squares[square];
-    if (!cell) return 0;
     return (cell.w.total.occupiedFor * 100) / data.movesTotal;
 });
 ```
@@ -56,12 +54,18 @@ Asking "where did white pieces spend their time?" for both groups on the example
 1     0.00   0.00   0.00 -40.00   0.00 -133.33    0.00  0.00
 ```
 
-![Comparison heatmap](/comp-heat1.png)
+![Comparison heatmap 1](/comp-heat1.png)
 
-With one game per group this is illustrative rather than insightful — but you can already see the high-ELO game pushing a pawn to e4 early (e2 empties faster, hence −600) while the low-ELO game opened with f3. Feed it two real cohorts of a few thousand games and the same code tells you where styles actually differ.
+With one game per group this is illustrative rather than insightful — but you can already see the high-ELO game pushing a pawn to e4 early (=e2 empties faster, hence −600%) while the low-ELO game opened with f3. Feed it two real cohorts of a few thousand games and the same code tells you where styles actually differ.
 
-<Callout type="info" title="Filters mean one thread">
-    Runs with `filter` are analyzed single-threaded, like any filtered analysis — see [Filtering
-    games](/docs/filters). Runs *without* filters can use the worker pool and still parse the file
-    only once per chunk.
+<Callout type="info" title="Comparable data is needed">
+    Note that the f3 square in the heatmap is completely white, yet this was white's first move in
+    the lower-ELO game. This is because we don't have a value to compare against since in the
+    high-ELO game this square was never occupied. This would result in a infinitely higher value
+    which can't be displayed meaningfully. With a greater sample size this will not be a problem
+    anymore.
 </Callout>
+
+For a more meaningful example check out the following heatmap, running the same analysis on a bigger PGN file with real games. A clear trend is visible here: the higher rated player takes control over the center more often than a lower rated player.
+
+![Comparison heatmap 2](/comp-heat2.png)
