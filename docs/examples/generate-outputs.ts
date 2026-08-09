@@ -22,6 +22,7 @@ import {
     pieceTracker,
     tileTracker,
     TileHeatmapPresets,
+    printHeatmap,
 } from '../../src/trackers/index';
 
 const PGN = fileURLToPath(new URL('./games.pgn', import.meta.url));
@@ -84,6 +85,8 @@ print(
     'HEATMAP_VALUES_GRID',
     `\n    ${['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'].map((f) => f.padStart(6)).join(' ')}\n${rows.join('\n')}`,
 );
+print('HEATMAP_PRINT', '');
+printHeatmap(heat);
 
 // --- filter (filters) ---
 const filtered = tileTracker();
