@@ -123,6 +123,8 @@ print(
     'COMPARISON_VALUES_GRID',
     `\n    ${['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'].map((f) => f.padStart(7)).join(' ')}\n${compRows.join('\n')}`,
 );
+print('COMPARISON_PRINT', '');
+printHeatmap(comparison);
 
 // --- custom move tracker numbers (custom trackers walkthrough) ---
 const counter = defineMoveTracker({
