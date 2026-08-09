@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 500 500" fill="none">
+  <!-- Standalone (favicon / README): follow OS color scheme. Docs nav inlines a currentColor variant instead. -->
+  <style>
+    .mark {
+      stroke: #0a0a0a;
+    }
+    @media (prefers-color-scheme: dark) {
+      .mark {
+        stroke: #fafafa;
+      }
+    }
+  </style>
+  <g
+    class="mark"
+    transform="translate(0 203)"
+    stroke="#0a0a0a"
+    stroke-linecap="butt"
+    stroke-linejoin="miter"
+  >
+    <path d="M87.06 221.972h326.525" stroke-width="20.359" />
+    <path d="M87.06 181.325h326.525" stroke-width="20.359" />
+    <path d="M97.478 187.455 251.971-119.165 403.381 187.117" stroke-width="17.891" />
+    <path d="M403.504 187.732 479.048-17.112 150.435 181.325" stroke-width="21.365" />
+    <path d="M97.109 187.578 21.812-16.775 350.424 181.663" stroke-width="21.365" />
+  </g>
+</svg>

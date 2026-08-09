@@ -1,52 +1,50 @@
 import { Link } from 'fumadocs-core/link';
+import type { CSSProperties } from 'react';
 
 import './home.css';
+import { Logo } from '@/components/logo';
 
 function HeroBoard() {
     const files = 14;
     const ranks = 14;
-    // Soft heatmap-style intensity on a few squares (library vibe, not uniform checker)
+    // Heat cluster biased mid-right so copy sits on quieter squares
     const heat: Record<string, number> = {
-        '7-5': 0.55,
-        '7-6': 0.75,
-        '8-5': 0.7,
-        '8-6': 0.95,
-        '6-6': 0.4,
-        '9-5': 0.45,
-        '8-7': 0.5,
-        '9-6': 0.6,
-        '6-5': 0.3,
-        '7-4': 0.35,
+        '10-6': 0.55,
+        '10-7': 0.75,
+        '11-6': 0.7,
+        '11-7': 0.95,
+        '9-7': 0.4,
+        '12-6': 0.45,
+        '11-8': 0.5,
+        '12-7': 0.6,
+        '9-6': 0.3,
+        '10-5': 0.35,
+        '13-7': 0.42,
+        '12-8': 0.38,
     };
 
     return (
         <svg
             className="home-hero-board absolute inset-0 size-full"
-            viewBox="0 0 1000 1000"
+            viewBox="0 0 1120 1120"
             preserveAspectRatio="xMidYMid slice"
             aria-hidden="true"
         >
             <defs>
-                <linearGradient id="boardWash" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#1f4a38" stopOpacity="0.9" />
-                    <stop offset="55%" stopColor="#163528" stopOpacity="0.95" />
-                    <stop offset="100%" stopColor="#0f241c" stopOpacity="1" />
-                </linearGradient>
-
-                <radialGradient id="boardGlow" cx="48%" cy="42%" r="55%">
-                    <stop offset="0%" stopColor="#c8a24a" stopOpacity="0.22" />
-                    <stop offset="55%" stopColor="#2d6b4f" stopOpacity="0.08" />
-                    <stop offset="100%" stopColor="#0f241c" stopOpacity="0" />
-                </radialGradient>
-
-                <linearGradient id="readability" x1="0%" y1="50%" x2="75%" y2="50%">
-                    <stop offset="0%" stopColor="#0c1a14" stopOpacity="0.72" />
-                    <stop offset="45%" stopColor="#0c1a14" stopOpacity="0.45" />
-                    <stop offset="100%" stopColor="#0c1a14" stopOpacity="0" />
+                <linearGradient id="readability" x1="0%" y1="50%" x2="70%" y2="50%">
+                    <stop
+                        offset="0%"
+                        stopColor="var(--home-wash)"
+                        style={{ stopOpacity: 'var(--home-wash-start)' }}
+                    />
+                    <stop
+                        offset="40%"
+                        stopColor="var(--home-wash)"
+                        style={{ stopOpacity: 'var(--home-wash-mid)' }}
+                    />
+                    <stop offset="100%" stopColor="var(--home-wash)" stopOpacity={0} />
                 </linearGradient>
             </defs>
-
-            {/* <rect width="800" height="800" fill="url(#boardWash)" /> */}
 
             {Array.from({ length: ranks }, (_, rank) =>
                 Array.from({ length: files }, (_, file) => {
@@ -63,22 +61,33 @@ function HeroBoard() {
                                 y={y}
                                 width={size}
                                 height={size}
-                                fill={light ? '#DC92' : '#6422'}
+                                fill={
+                                    light ? 'var(--home-square-light)' : 'var(--home-square-dark)'
+                                }
                             />
                             {intensity > 0 ? (
                                 <rect
+                                    className="home-heat-cell"
                                     x={x}
                                     y={y}
                                     width={size}
                                     height={size}
-                                    fill="#FA0"
-                                    opacity={intensity * 0.4}
+                                    fill="var(--home-heat)"
+                                    style={
+                                        {
+                                            '--heat-base-opacity': `calc(${intensity} * var(--home-heat-strength))`,
+                                            opacity: `calc(${intensity} * var(--home-heat-strength))`,
+                                            animationDelay: `${((file + rank) % 5) * 0.75}s`,
+                                        } as CSSProperties
+                                    }
                                 />
                             ) : null}
                         </g>
                     );
                 }),
             )}
+
+            <rect width="1120" height="1120" fill="url(#readability)" />
         </svg>
     );
 }
@@ -88,19 +97,18 @@ export default function Home() {
         <div className="home-page relative isolate flex flex-1 flex-col overflow-hidden border-fd-muted sm:m-4 sm:rounded-lg sm:border sm:border-fd-border">
             <HeroBoard />
 
-            <div className="absolute inset-0 z-10"></div>
-
             <div className="z-10 flex flex-1 flex-col justify-center">
                 <div className="px-6 py-24 sm:px-10 lg:px-36">
-                    <p className="home-brand mb-5 text-5xl font-semibold tracking-tight text-fd-foreground sm:text-6xl md:text-7xl">
+                    <p className="home-brand mb-5 flex items-end gap-2 text-5xl font-semibold tracking-tight sm:text-6xl md:text-7xl">
+                        <Logo className="size-16 sm:size-20 md:size-22" />
                         Chessalyzer
                     </p>
 
-                    <h1 className="home-headline mb-4 max-w-lg text-2xl leading-snug font-medium text-fd-foreground sm:text-3xl md:text-4xl">
+                    <h1 className="home-headline mb-4 max-w-lg text-2xl font-medium sm:text-3xl md:text-4xl">
                         Batch-analyze chess games at scale
                     </h1>
 
-                    <p className="home-lede mb-8 max-w-xl text-base leading-relaxed text-fd-foreground sm:text-lg">
+                    <p className="home-lede mb-8 max-w-xl text-base leading-relaxed sm:text-lg">
                         Parse large PGN databases and run modular trackers — fast, parallel, and
                         dependency-free.
                     </p>
@@ -108,13 +116,13 @@ export default function Home() {
                     <div className="home-cta flex flex-wrap items-center gap-4">
                         <Link
                             href="/docs"
-                            className="inline-flex items-center rounded bg-orange-300 px-5 py-3 text-sm font-semibold text-gray-800 transition-transform duration-300 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300"
+                            className="home-cta-primary inline-flex items-center rounded px-5 py-3 text-sm font-semibold transition-transform duration-300 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2"
                         >
                             Open Docs
                         </Link>
                         <a
                             href="https://github.com/yschroe/chessalyzer"
-                            className="text-sm font-medium text-fd-foreground underline-offset-4 hover:underline"
+                            className="home-cta-secondary text-sm font-medium underline-offset-4 hover:underline"
                         >
                             View on GitHub
                         </a>

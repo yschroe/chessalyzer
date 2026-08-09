@@ -20,7 +20,7 @@ await analyzePGN('games.pgn', {
 });
 ```
 
-Each run accumulates into its own tracker instances: on our [example file](/docs/quickstart#the-example-file), `high.state` sees only alice's 2114-ELO game (7 half-moves), while `low.state` sees only blunderbuss' 1650 game (4 half-moves).
+Each run accumulates into its own tracker instances: on our [example file](/docs/quickstart#the-example-file), `high.state` sees only alice's 2114-Elo game (7 half-moves), while `low.state` sees only blunderbuss' 1650 game (4 half-moves).
 
 <Callout type="warn" title="One instance per group">
     Pass **distinct tracker instances** to each run (`tileTracker()` twice, not one instance
@@ -56,12 +56,12 @@ Asking "where did white pieces spend their time?" for both groups on the example
 
 ![Comparison heatmap 1](/comp-heat1.png)
 
-With one game per group this is illustrative rather than insightful — but you can already see the high-ELO game pushing a pawn to e4 early (=e2 empties faster, hence −600%) while the low-ELO game opened with f3. Feed it two real cohorts of a few thousand games and the same code tells you where styles actually differ.
+With one game per group this is illustrative rather than insightful — but you can already see the high-Elo game pushing a pawn to e4 early (=e2 empties faster, hence −600%) while the low-Elo game opened with f3. Feed it two real cohorts of a few thousand games and the same code tells you where styles actually differ.
 
 <Callout type="info" title="Comparable data is needed">
     Note that the f3 square in the heatmap is completely white, yet this was white's first move in
-    the lower-ELO game. This is because we don't have a value to compare against since in the
-    high-ELO game this square was never occupied. This would result in a infinitely higher value
+    the lower-Elo game. This is because we don't have a value to compare against since in the
+    high-Elo game this square was never occupied. This would result in a infinitely higher value
     which can't be displayed meaningfully. With a greater sample size this will not be a problem
     anymore.
 </Callout>
