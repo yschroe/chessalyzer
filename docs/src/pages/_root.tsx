@@ -7,7 +7,13 @@ import '@/styles/globals.css';
 export default async function RootElement({ children }: { children: ReactNode }) {
     return (
         <html lang="en" suppressHydrationWarning>
-            <head></head>
+            <head>
+                <link
+                    rel="icon"
+                    href={`${import.meta.env.BASE_URL}logo.svg`}
+                    type="image/svg+xml"
+                />
+            </head>
             <body data-version="1.0" className="flex min-h-screen flex-col">
                 <Provider>{children}</Provider>
             </body>
